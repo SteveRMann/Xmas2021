@@ -4,14 +4,26 @@
 // Was "xmasTree_OTA"
 // Was "fastLED_twinkle_OTA"
 
-#define FASTLED_INTERNAL        // Pragma fix
-#include <FastLED.h>
-#include "ESP8266WiFi.h"
-#include "D:\River Documents\Arduino\libraries\Kaywinnet.h"
+
+//---------- wifi ----------
+#define HOSTPREFIX "tree3"
+#include "ESP8266WiFi.h"   //Not needed if also using the Arduino OTA Library...
+#include "D:\River Documents\Arduino\libraries\Kaywinnet.h"  \\ WiFi credentials
+char macBuffer[24];       //Holds the last three digits of the MAC, in hex.
+char hostNamePrefix[] = HOSTPREFIX;
+char hostName[24];        //Holds hostNamePrefix + the last three bytes of the MAC address.
+
+// ---------- ota ----------
 #include <ArduinoOTA.h>
 
+// ---------- fastLED ----------
+#define FASTLED_INTERNAL        // Pragma fix
+#include <FastLED.h>
 
-#define NUM_LEDS 50
+
+#include <ArduinoOTA.h>
+
+#define NUM_LEDS 785
 #define LED_PIN_1 D2    //Tree topper.
 #define LED_PIN_2 D1
 #define COLOR_ORDER RGB
@@ -19,15 +31,15 @@
 #define LED_TYPE WS2811
 #define TOP_TYPE WS2812
 
-CRGB topColor=CRGB::Blue;
+CRGB topColor = CRGB::Blue;
 
 CRGB top[1];                // Tree topper, one bulb  //****
 CRGB leds[NUM_LEDS];        // Array for the string of LEDS
 uint8_t data[NUM_LEDS];
 
 int paletteNumber;
-unsigned long loopMillis; 
-unsigned long topFlash;; 
+unsigned long loopMillis;
+unsigned long topFlash;;
 static int interval;
 unsigned long endTime = 0;
 int state = 0;
@@ -84,10 +96,10 @@ void setup() {
 
   delay(1000);
   FastLED.addLeds<LED_TYPE, LED_PIN_2, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
-  FastLED.addLeds<TOP_TYPE, LED_PIN_1, COLOR_ORDER>(top, 1).setCorrection(TypicalLEDStrip); 
+  FastLED.addLeds<TOP_TYPE, LED_PIN_1, COLOR_ORDER>(top, 1).setCorrection(TypicalLEDStrip);
   FastLED.setBrightness(BRIGHTNESS);
 
-  
+
   // Init the topper //****
   top[0] = CRGB::Blue;
   FastLED.show();
@@ -100,8 +112,8 @@ void setup() {
 //----------------------- loop() -------------------
 void loop() {
   ArduinoOTA.handle();
-  loopMillis=millis();
-  
+  loopMillis = millis();
+
   EVERY_N_SECONDS(5) {
     next_palette();
   }
@@ -113,5 +125,5 @@ void loop() {
 
   FastLED.show();
   FastLED.delay(20); // Higher is slower changes
-  
+
 }
