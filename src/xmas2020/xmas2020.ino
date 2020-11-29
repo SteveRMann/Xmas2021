@@ -27,7 +27,7 @@ char hostName[24];        //Holds hostNamePrefix + the last three bytes of the M
 #define LED_PIN_1 D2    //Tree topper.
 #define LED_PIN_2 D1
 #define COLOR_ORDER RGB
-#define BRIGHTNESS 15
+#define BRIGHTNESS 60
 #define LED_TYPE WS2811
 #define TOP_TYPE WS2812
 
