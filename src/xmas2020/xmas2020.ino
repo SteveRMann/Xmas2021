@@ -17,24 +17,25 @@ char hostName[24];        //Holds hostNamePrefix + the last three bytes of the M
 #include <ArduinoOTA.h>
 
 // ---------- fastLED ----------
-#define FASTLED_INTERNAL        // Pragma fix
+#define FASTLED_INTERNAL        //Pragma fix
 #include <FastLED.h>
 
 
 #include <ArduinoOTA.h>
 
-#define NUM_LEDS 785
-#define LED_PIN_1 D2    //Tree topper.
-#define LED_PIN_2 D1
+#define NUM_LEDS 786
+#define NUM_TOP_LEDS 21
+#define LED_PIN_1 D3    //Tree topper.
+#define LED_PIN_2 D2    //Main tree part. 4
 #define COLOR_ORDER RGB
 #define BRIGHTNESS 60
 #define LED_TYPE WS2811
-#define TOP_TYPE WS2812
+#define TOP_TYPE WS2811
 
 CRGB topColor = CRGB::Blue;
 
-CRGB top[1];                // Tree topper, one bulb  //****
-CRGB leds[NUM_LEDS];        // Array for the string of LEDS
+CRGB topper[NUM_TOP_LEDS];            //Tree topper
+CRGB leds[NUM_LEDS];                  //Array for the string of LEDS
 uint8_t data[NUM_LEDS];
 
 int paletteNumber;
@@ -96,12 +97,14 @@ void setup() {
 
   delay(1000);
   FastLED.addLeds<LED_TYPE, LED_PIN_2, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
-  FastLED.addLeds<TOP_TYPE, LED_PIN_1, COLOR_ORDER>(top, 1).setCorrection(TypicalLEDStrip);
+  FastLED.addLeds<TOP_TYPE, LED_PIN_1, COLOR_ORDER>(topper, NUM_TOP_LEDS).setCorrection(TypicalLEDStrip);
   FastLED.setBrightness(BRIGHTNESS);
 
 
-  // Init the topper //****
-  top[0] = CRGB::Blue;
+  // Init the topper
+  for (int i = 0; i < NUM_TOP_LEDS; i++) {
+    topper[i] = CRGB::Blue;
+  }
   FastLED.show();
 
   paletteNumber = 5;        // Show the default palette first.

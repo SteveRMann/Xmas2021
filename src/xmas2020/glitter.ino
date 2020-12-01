@@ -3,15 +3,14 @@
 //------------------ add_glitter() ---------------
 void add_glitter()
 {
-  int chance_of_glitter =  10; // percent of the time that we add glitter
-  int number_of_glitters = 5; // number of glitter sparkles to add
+  int chance_of_glitter =  10;        //percent of the time that we add glitter
+  int number_of_glitters = 5;         //number of glitter sparkles to add
 
   int r = random8(100);
   if ( r < chance_of_glitter ) {
     for ( int j = 0; j < number_of_glitters; j++) {
       int pos = random16( NUM_LEDS);
-      leds[pos] = CRGB::White; // very bright glitter
-      //[0] = CRGB::White;   // Blink the topper
+      leds[pos] = CRGB::White;        //very bright glitter
     }
   }
 }
@@ -20,19 +19,27 @@ void add_glitter()
 //----------------- top_glitter --------------
 void top_glitter() {
   //Blink the top white at random
-  static unsigned long whiteTime = 50ul;                // How long the top is white.
-  unsigned int topInterval = random(30000ul);           // How long between blinks
+  static unsigned long whiteTime = 50ul;                //How long the top is white.
+  unsigned int topInterval = random(10000ul);           //How long between blinks
+  static int i = random8(NUM_TOP_LEDS);
 
-
+  //White end?
   if (millis() - endTime > whiteTime and state == 0) {
-    top[0] = topColor;
+    //Yes, set all to topColor
+    for (int i = 0; i < NUM_TOP_LEDS; i++) {
+      topper[i] = topColor;
+    }
+    FastLED.show();
     endTime = millis();
     state = 1;
   }
 
+  //Time for another blink?
   if (millis() - endTime > topInterval and state == 1) {
     endTime = millis();
-    top[0] = CRGB::White;
+    i = random8(NUM_TOP_LEDS);                                    //Random LED
+    topper[i] = CRGB::White;
+    FastLED.show();
     state = 0;
   }
 }
