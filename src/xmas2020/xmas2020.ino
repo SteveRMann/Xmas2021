@@ -8,10 +8,11 @@
 //---------- wifi ----------
 #define HOSTPREFIX "tree3"
 #include "ESP8266WiFi.h"   //Not needed if also using the Arduino OTA Library...
-#include "D:\River Documents\Arduino\libraries\Kaywinnet.h"  \\ WiFi credentials
-char macBuffer[24];       //Holds the last three digits of the MAC, in hex.
+//#include "D:\River Documents\Arduino\libraries\Kaywinnet.h"  \\ WiFi credentials
+#include <Kaywinnet.h>     //WiFi credentials
+char macBuffer[24];        //Holds the last three digits of the MAC, in hex.
 char hostNamePrefix[] = HOSTPREFIX;
-char hostName[24];        //Holds hostNamePrefix + the last three bytes of the MAC address.
+char hostName[24];         //Holds hostNamePrefix + the last three bytes of the MAC address.
 
 // ---------- ota ----------
 #include <ArduinoOTA.h>
@@ -21,18 +22,16 @@ char hostName[24];        //Holds hostNamePrefix + the last three bytes of the M
 #include <FastLED.h>
 
 
-#include <ArduinoOTA.h>
-
 #define NUM_LEDS 786
 #define NUM_TOP_LEDS 21
 #define LED_PIN_1 D3    //Tree topper.
-#define LED_PIN_2 D2    //Main tree part. 4
+#define LED_PIN_2 D2    //Main tree part. 
 #define COLOR_ORDER RGB
 #define BRIGHTNESS 60
 #define LED_TYPE WS2811
 #define TOP_TYPE WS2811
 
-CRGB topColor = CRGB::Blue;
+CRGB topColor = CRGB::LightBlue;
 
 CRGB topper[NUM_TOP_LEDS];            //Tree topper
 CRGB leds[NUM_LEDS];                  //Array for the string of LEDS
@@ -41,48 +40,14 @@ uint8_t data[NUM_LEDS];
 int paletteNumber;
 unsigned long loopMillis;
 unsigned long topFlash;;
-static int interval;
+//static int interval;
 unsigned long endTime = 0;
 int state = 0;
 
 
 
 //------------------ define palettes ---------------
-CRGBPalette16 gPalette (
-  CRGB::Violet, CRGB::Violet,
-  CRGB::Red,   CRGB::Red,  CRGB::Red,  CRGB::Red,
-  CRGB::Blue,  CRGB::Blue, CRGB::Blue, CRGB::Blue,
-  CRGB::Green,  CRGB::Green, CRGB::Green, CRGB::Green,
-  CRGB::Violet, CRGB::Violet
-);
-
-CRGBPalette16 xmasPalette (
-  CRGB::Blue, CRGB::Blue, CRGB::Red, CRGB::Red,
-  CRGB::Red,  CRGB::Blue, CRGB::Red, CRGB::Green,
-  CRGB::Gold, CRGB::Gold, CRGB::Violet, CRGB::Green,
-  CRGB::Green, CRGB::Green, CRGB::Gold, CRGB::Yellow
-);
-
-CRGBPalette16 xPalette (
-  CRGB::DimGray, CRGB::DimGray, CRGB::DimGray, CRGB::DimGray,
-  CRGB::DimGray, CRGB::DimGray, CRGB::DimGray, CRGB::DimGray,
-  CRGB::DimGray, CRGB::DimGray, CRGB::DimGray, CRGB::DimGray,
-  CRGB::DimGray, CRGB::DimGray, CRGB::DimGray, CRGB::Coral
-);
-
-CRGBPalette16 PaletteBlue (
-  CRGB::Turquoise, CRGB::SteelBlue, CRGB::SkyBlue, CRGB::RoyalBlue,
-  CRGB::Purple,  CRGB::PowderBlue, CRGB::PaleTurquoise, CRGB::Orchid,
-  CRGB::MediumVioletRed, CRGB::MediumTurquoise, CRGB::MediumSlateBlue, CRGB::MediumPurple,
-  CRGB::MediumOrchid, CRGB::MediumBlue, CRGB::LightSkyBlue, CRGB::DodgerBlue
-);
-
-CRGBPalette16 rgbPalette (
-  CRGB::Blue, CRGB::Red, CRGB::Green, CRGB::Blue,
-  CRGB::Red, CRGB::Green, CRGB::Blue, CRGB::Red,
-  CRGB::Green, CRGB::Blue, CRGB::Red, CRGB::Green,
-  CRGB::Blue, CRGB::Red, CRGB::Green, CRGB::Blue
-);
+#include "palettes.h"
 
 
 //----------------------- setup() -------------------
@@ -103,7 +68,7 @@ void setup() {
 
   // Init the topper
   for (int i = 0; i < NUM_TOP_LEDS; i++) {
-    topper[i] = CRGB::Blue;
+    topper[i] = topColor;
   }
   FastLED.show();
 

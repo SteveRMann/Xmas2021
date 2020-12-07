@@ -1,0 +1,2 @@
+fadeTowardColor.ino
+  Interesting twinkle effect.  Tree is green with ocassional sparkles of other colors at random.
