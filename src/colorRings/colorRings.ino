@@ -1,9 +1,13 @@
-#define SKETCH "showRings.ino"
+#define SKETCH "colorRings.ino"
+#define test
 
+/*
+   Was showRings, but with delays again.
+*/
 
 
 //---------- wifi ----------
-#define HOSTPREFIX "showRings"      //18 chars max
+#define HOSTPREFIX "colorRings"      //18 chars max
 #include "ESP8266WiFi.h"            //Not needed if also using the Arduino OTA Library...
 #include <Kaywinnet.h>              //WiFi credentials
 char macBuffer[24];                 //Holds the last three digits of the MAC, in hex.
@@ -16,10 +20,10 @@ char hostName[24];                  //Holds hostNamePrefix + the last three byte
 
 
 // ---------- Timers ----------
-#include <dlay.h>
-dlay dripTimer;
-dlay sequenceTimer;
-dlay sequenceDelay;
+//#include <dlay.h>
+//dlay dripTimer;
+//dlay sequenceTimer;
+//dlay sequenceDelay;
 
 
 
@@ -41,7 +45,6 @@ dlay sequenceDelay;
 #define TOP_COLOR_ORDER RGB
 #define TOP_NUM_LEDS    21
 CRGB topper[TOP_NUM_LEDS];
-//CRGB topColor = CRGB::LightSkyBlue;
 CRGB topColor = CRGB::BlanchedAlmond;
 CRGB glitterColor = CRGB::Blue;
 
@@ -51,9 +54,9 @@ int state = 0;
 
 
 int colorPtr = 0;
-const int colorCount = 4;
-CRGB colors[colorCount] = {CRGB::Red, CRGB::Green, CRGB::Blue, CRGB::Black};
-
+const int COLOR_COUNT = 7;
+CRGB colors[COLOR_COUNT] = {CRGB::Red, CRGB::Green, CRGB::Orange, CRGB::Pink, CRGB::Blue, CRGB::Yellow, CRGB::Purple};
+int colorNumber = 0;
 
 CRGB leds[NUM_LEDS];            // Array for the string of tree LEDS
 uint8_t data[NUM_LEDS];
@@ -68,9 +71,11 @@ int paletteNumber;
 
 int ringPtr = 0;              //Current ring number
 int dripSpeed = 25;           //Smaller is faster
+#ifdef test
 int dripPeriod = 6000;        //How often a drip starts
-int sequenceDelayMs = 500;   //How long between sequences.
-
+#else
+int dripPeriod = 15000
+#endif
 
 
 //----------------------- setRing() -------------------
@@ -80,46 +85,12 @@ int sequenceDelayMs = 500;   //How long between sequences.
 //  setRing(3,sizeof(ring[3]),RED;
 //  FastLED.show();
 
-void setRing(int rn, int rlc, CRGB ringColor) {
-  //Debugging
-  //Serial.println();
-  //Serial.print(F("Ring number: "));
-  //Serial.println(rn);
-  //Serial.print(F("Ring LED count= "));
-  //Serial.println(rlc);
-
+void setRing(int rngNum, int rlc, CRGB rngColor) {
   for (int i = 0; i < rlc; i++) {
-    leds[ring[rn][i]] = ringColor;
-    //debug
-    //Serial.println (ring[rn][i]);
+    leds[ring[rngNum][i]] = rngColor;
   }
 }
 
-
-
-
-void nextRingLed(int rn, int rlc, CRGB ringColor) {
-  //This function increments the ring then paints it with the argument color.
-  static int i = 0;
-  if (i >= rlc) {
-    //done.
-    i = 0;
-    colorPtr++;
-    if (colorPtr > 2)
-      colorPtr = 0;
-    return;
-  }
-
-  if (rn == 31) i++;
-  Serial.print(F("rn= "));
-  Serial.print(rn);
-  Serial.print(F(",  i= "));
-  Serial.println(i);
-
-  leds[ring[rn][i]] = ringColor;    //Picks one LED in the ring array of LED numbers.
-  FastLED.show();
-  i++;
-}
 
 
 // ========================== fadeall ==========================
@@ -164,10 +135,10 @@ void setup() {
 
 
   // Init the topper
-  topper[0] = CRGB::Blue;
+  for (int i = 0; i < TOP_NUM_LEDS; i++) {
+    topper[1] = CRGB::Yellow;
+  }
   FastLED.show();
-  delay(100);
-  // paletteNumber = 5;        // Show the default palette first.
 
 
 
@@ -182,66 +153,26 @@ void setup() {
   for (int iLed = 0; iLed < NUM_LEDS; iLed = iLed + 1) leds[iLed] = CRGB::Green;
   FastLED.show();
 
-
-  // start timers
-  dripTimer.setTime(dripSpeed, true);              //How fast does the drip occur.
-  sequenceTimer.setTime(dripPeriod, true);         //How long in ms between sequences.
-  sequenceDelay.setTime(sequenceDelayMs, false);   //When to restart the whole sequence.
 }
 
 
 
-//----------------------- loop() -------------------
+
+//---------------------------- loop() ------------------------
 void loop() {
   ArduinoOTA.handle();
 
+  top_glitter();
+  
   // Drip
-  //Every dripSpeed ms, bump the ring number and set that ring to white
-  if (dripTimer.ding()) {
-    setRing(ringPtr, ledsPerRing, CRGB::White);          //ringPtr inits to 0 in setup()
+  for (int ringPtr = 0; ringPtr < ringCount; ringPtr++) {     //For each ring
+    setRing(ringPtr, ledsPerRing, colors[colorNumber]);       //Paint the color
     FastLED.show();
-    dripTimer.start();                         //Restart the timer
-
-    ringPtr++;                                 //Bump ringPtr, if > if all rings are white, turn off the drip.
-    if (ringPtr > ringCount) {
-      dripTimer.stop();                        //Stop the drip timer
-      ringPtr = 0;                             //Reset the ring pointer for the next drip.
-    }
+    delay(dripSpeed);
   }
 
-
-  // Start over
-  //When sequenceTimer dings, start over. Set the tree to green and enable sequenceDelay so that in one second
-  //the sequence starts over.
-  if (sequenceTimer.ding()) {
-    sequenceTimer.stop();
-
-/*
-    //Fade to black then fade-up to green.
-    for (int iLed = 0; iLed < NUM_LEDS; iLed = iLed + 2) {
-      FastLED.show();
-      fadeAll();
-      //delay(1);
-    }
-
-    for (int iLed = 0; iLed < NUM_LEDS; iLed = iLed + 2) {
-      FastLED.show();
-      fadeUp();
-      //delay(1);
-    }
-*/
-
-    for (int iLed = 0; iLed < NUM_LEDS; iLed++) leds[iLed] = CRGB::Blue;
-    FastLED.show();
-    sequenceDelay.setTime(sequenceDelayMs, true);      //Restart sequenceDelay. In one second, start the drip again.
-  }
-
-
-  //Pause sequenceDelay ms before starting the dripTimer again.
-  if (sequenceDelay.ding()) {
-    sequenceDelay.stop();
-    dripTimer.setTime(dripSpeed, true);                //Restart dripTimer
-    sequenceTimer.setTime(dripPeriod, true);           //Restart sequenceTimer
-  }
+  delay(dripPeriod);                                                //Hold the solid color
+  colorNumber++;                                              //Next color.
+  if (colorNumber >= COLOR_COUNT) colorNumber = 0;
 
 }

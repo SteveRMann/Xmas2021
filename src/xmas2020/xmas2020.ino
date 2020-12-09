@@ -35,13 +35,13 @@ CRGB topColor = CRGB::LightBlue;
 
 CRGB topper[NUM_TOP_LEDS];            //Tree topper
 CRGB leds[NUM_LEDS];                  //Array for the string of LEDS
-uint8_t data[NUM_LEDS];
+///uint8_t data[NUM_LEDS];
 
 int paletteNumber;
-unsigned long loopMillis;
-unsigned long topFlash;;
+///unsigned long loopMillis;
+///unsigned long topFlash;
 //static int interval;
-unsigned long endTime = 0;
+unsigned long endTime = 0;            //Used in glitter.ino
 int state = 0;
 
 
@@ -80,7 +80,7 @@ void setup() {
 //----------------------- loop() -------------------
 void loop() {
   ArduinoOTA.handle();
-  loopMillis = millis();
+  ///loopMillis = millis();
 
   EVERY_N_SECONDS(5) {
     next_palette();

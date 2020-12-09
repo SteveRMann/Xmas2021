@@ -1,12 +1,12 @@
 //Rings Arrays
 //Ring[0] is on top, ring[31] is on the bottom. Each ring has 24 LEDs.
 
+#ifndef test
 //ring[ringnum,ledsPerRing]
-//int numRings = 32;
 const int ledsPerRing = 24;
 const int ringCount = 32;
-//Ring[0] is on top, ring[32] is on the bottom. Each ring has 24 LEDs.
-int ring[ringCount] [24] {
+//Ring[0] is on top, ring[ledsPerRing] is on the bottom. Each ring has 24 LEDs.
+int ring[ringCount] [ledsPerRing] {
   {34, 35, 99, 100, 164, 165, 230, 231, 296, 297, 362, 363, 428, 429, 493, 494, 557, 558, 622, 623, 688, 689, 753, 754}, // Ring 0
   {33, 36, 98, 101, 163, 166, 229, 232, 295, 298, 361, 364, 427, 430, 492, 495, 556, 559, 621, 624, 687, 690, 752, 755}, // Ring 1
   {32, 37, 97, 102, 162, 167, 228, 233, 294, 299, 360, 365, 426, 431, 491, 496, 555, 560, 620, 625, 686, 691, 751, 756}, // Ring 2
@@ -40,10 +40,14 @@ int ring[ringCount] [24] {
   {4, 65, 69, 130, 134, 195, 200, 261, 266, 327, 332, 393, 398, 459, 463, 524, 527, 588, 592, 653, 658, 719, 723, 784}, // Ring 30
   {3, 65, 69, 131, 134, 196, 200, 261, 265, 328, 332, 395, 398, 459, 462, 524, 527, 589, 592, 653, 657, 719, 723, 784}, // Ring 31
 };
+#endif
 
-
-/*
-  int ring[32] [24] {
+#ifdef test
+//ring[ringnum,ledsPerRing]
+const int ringCount = 25;
+const int ledsPerRing = 3;
+//Ring[0] is on top, ring[ledsPerRing] is on the bottom. Each ring has 3 LEDs.
+int ring[ringCount] [ledsPerRing] {
   {24, 25, 74}, //Ring 0
   {23, 26, 73}, //Ring 1
   {22, 27, 72}, //Ring 2
@@ -69,7 +73,5 @@ int ring[ringCount] [24] {
   {2, 47, 52},  //Ring 22
   {1, 48, 51},  //Ring 23
   {0, 49, 50}   //Ring 24
-  };
-  int ringCount = 25;
-
-*/
+};
+#endif

@@ -1,2 +1,11 @@
 fadeTowardColor.ino
   Interesting twinkle effect.  Tree is green with ocassional sparkles of other colors at random.
+
+
+TwinkleFOX.ino
+https://gist.github.com/kriegsman/756ea6dcae8e30845b5a
+
+
+ColorWavesWithPalettes
+Constantly changing base color with fading twinkles.
+
