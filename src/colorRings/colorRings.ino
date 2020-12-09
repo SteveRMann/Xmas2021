@@ -2,7 +2,7 @@
 #define test
 
 /*
-   Was showRings, but with delays again.
+   Was showRings, but with dlays, (not dlay.h).
 */
 
 
@@ -35,7 +35,7 @@ char hostName[24];                  //Holds hostNamePrefix + the last three byte
 #define NUM_LEDS 785
 #define TREE_PIN D2
 #define COLOR_ORDER RGB
-#define BRIGHTNESS 100
+#define BRIGHTNESS 80
 #define LED_TYPE WS2811
 CRGB leds[NUM_LEDS];            // Array for the string of tree LEDS
 uint8_t data[NUM_LEDS];
@@ -46,7 +46,6 @@ uint8_t data[NUM_LEDS];
 #define TOP_COLOR_ORDER RGB
 #define TOP_NUM_LEDS    21
 CRGB topper[TOP_NUM_LEDS];
-//CRGB topColor = CRGB::BlanchedAlmond;
 CRGB topColor = CRGB::Yellow;
 CRGB glitterColor = CRGB::Blue;
 
@@ -62,8 +61,8 @@ unsigned int topInterval = random(1000ul, 6000ul);      //How long between blink
 
 
 int colorPtr = 0;
-const int COLOR_COUNT = 7;
-CRGB colors[COLOR_COUNT] = {CRGB::Red, CRGB::Green, CRGB::Orange, CRGB::Pink, CRGB::Blue, CRGB::Yellow, CRGB::Purple};
+const int COLOR_COUNT = 5;
+CRGB colors[COLOR_COUNT] = {CRGB::Red, CRGB::Green, CRGB::Orange, CRGB::Blue, CRGB::Purple};
 int colorNumber = 0;
 
 
@@ -80,7 +79,7 @@ int dripSpeed = 25;           //Smaller is faster
 #ifdef test
 int dripPeriod = 3000;        //How often a drip starts
 #else
-int dripPeriod = 15000
+int dripPeriod = 15000;
 #endif
 
 
@@ -142,10 +141,10 @@ void setup() {
   Serial.println(F(SKETCH));
   Serial.println(F("---------------"));
 
-#ifndef test
+  //#ifndef test
   setup_wifi();
   start_OTA();
-#endif
+  //#endif
 
   delay(10);
   FastLED.addLeds<LED_TYPE, TREE_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
@@ -163,15 +162,10 @@ void setup() {
 
 
   // ----- Turn off all LEDs -----
-  //  for (int iLed = 0; iLed < NUM_LEDS; iLed = iLed + 1) leds[iLed] = CRGB::Black;
-  //  FastLED.show();
-  //  delay(1000);
-  // ----------------------------
-
-
-  //start with the tree all green.
-  for (int iLed = 0; iLed < NUM_LEDS; iLed = iLed + 1) leds[iLed] = CRGB::Green;
+  for (int iLed = 0; iLed < NUM_LEDS; iLed = iLed + 1) leds[iLed] = CRGB::Black;
   FastLED.show();
+  delay(100);
+  // ----------------------------
 
 }
 
