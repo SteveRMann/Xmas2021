@@ -20,27 +20,27 @@ void add_glitter()
 //----------------- top_glitter --------------
 void top_glitter() {
   //Blink the topper LEDs at random
-  static unsigned long whiteTime = 100ul;                //How long the top is white.
-  unsigned int topInterval = random(10000ul);           //How long between blinks
-  static int i = random8(TOP_NUM_LEDS);
 
-  //White end?
-  if (millis() - endTime > whiteTime and state == 0) {
+  //Time for another blink?
+  if (millis() - endTime > topInterval && state == top_BlinkOff) {
+    endTime = millis();
+    int i = random8(TOP_NUM_LEDS);                                    //Random LED
+    topper[i] = glitterColor;
+    FastLED.show();
+    state = top_BlinkOn;
+  }
+
+  //Blink end?
+  if (millis() - endTime > blinkTime && state == top_BlinkOn) {
     //Yes, set all to topColor
     for (int i = 0; i < TOP_NUM_LEDS; i++) {
       topper[i] = topColor;
     }
     FastLED.show();
     endTime = millis();
-    state = 1;
+    topInterval = random(500ul, 3000ul);    //Get a new interval between blinks.
+
+    state = top_BlinkOff;
   }
 
-  //Time for another blink?
-  if (millis() - endTime > topInterval and state == 1) {
-    endTime = millis();
-    i = random8(TOP_NUM_LEDS);                                    //Random LED
-    topper[i] = glitterColor;
-    FastLED.show();
-    state = 0;
-  }
 }
