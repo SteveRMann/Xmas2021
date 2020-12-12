@@ -6,6 +6,7 @@
 */
 
 
+
 //---------- wifi ----------
 #define HOSTPREFIX "colorRings"      //18 chars max
 #include "ESP8266WiFi.h"            //Not needed if also using the Arduino OTA Library...
@@ -13,6 +14,30 @@
 char macBuffer[24];                 //Holds the last three digits of the MAC, in hex.
 char hostNamePrefix[] = HOSTPREFIX;
 char hostName[24];                  //Holds hostNamePrefix + the last three bytes of the MAC address.
+
+
+//---------- MQTT ----------
+#include <ESP8266WiFi.h>        //Connect (and reconnect) an ESP8266 to the a WiFi network.
+#include <PubSubClient.h>       //connect to a MQTT broker and publish/subscribe messages in topics.
+#include <Kaywinnet.h>          //Net credentials.
+
+//Declare an object of class WiFiClient, which allows to establish a connection to a specific IP and port
+//Declare an object of class PubSubClient, which receives as input of the constructor the previously defined WiFiClient.
+//The constructor MUST be unique on the network.
+WiFiClient colrrings;
+PubSubClient client(colrrings);
+
+#define NODENAME "colorRings"                               //Give this node a name
+const char *cmndTopic = NODENAME "/cmnd";                   //Incoming commands, payload is a command.
+const char *connectName =  NODENAME "1";                    //Must be unique on the network
+const char *mqttServer = MQTT_SERVER;                       //Broker credentials defined in Kaywinnet.h
+const int mqttPort = MQTT_PORT;
+
+//Build an array of topics to subscribe to in mqttConnect()
+static const char *mqttSubs[] = {
+  cmndTopic
+};
+
 
 
 // ---------- ota ----------
@@ -44,7 +69,11 @@ uint8_t data[NUM_LEDS];
 #define TOP_DATA_PIN    D3
 #define TOP_LED_TYPE    WS2811
 #define TOP_COLOR_ORDER RGB
+#ifdef test
+#define TOP_NUM_LEDS    24
+#else
 #define TOP_NUM_LEDS    21
+#endif
 CRGB topper[TOP_NUM_LEDS];
 CRGB topColor = CRGB::Yellow;
 CRGB glitterColor = CRGB::Blue;
@@ -124,11 +153,18 @@ void  fadeUp () {
 // -------------------- dlay() --------------------
 void dlay(unsigned long waitTime) {
   //Delay waitTime ms, but keep the critical stuff in the delay loop
+  //Put dlay(0); at the top of loop() to make sure the critical stuff is handled properly.
   unsigned long endTime = millis() + waitTime;    //Calculate the end time.
   do {
     ESP.wdtFeed();
     ArduinoOTA.handle();
     top_glitter();
+    //Make sure we stay connected to the mqtt broker
+    if (!client.connected()) {
+      mqttConnect();
+    }
+    client.loop();                      //Check for MQTT messages
+    if (waitTime == 0) return;
   } while (millis() <= endTime);
 }
 
@@ -144,7 +180,10 @@ void setup() {
   //#ifndef test
   setup_wifi();
   start_OTA();
+  client.setServer(mqttServer, mqttPort);
+  mqttConnect();
   //#endif
+
 
   delay(10);
   FastLED.addLeds<LED_TYPE, TREE_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
@@ -174,8 +213,7 @@ void setup() {
 
 //---------------------------- loop() ------------------------
 void loop() {
-  ArduinoOTA.handle();
-  top_glitter();
+  dlay(0);                //Handle the critical stuff
 
   // Drip
   for (int ringPtr = 0; ringPtr < ringCount; ringPtr++) {     //For each ring
