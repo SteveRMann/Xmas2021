@@ -2,7 +2,7 @@
 #define test
 
 /*
-   Was showRings, but with dlays, (not dlay.h).
+   This version uses the dlay library
 */
 
 
@@ -47,16 +47,17 @@ static const char *mqttSubs[] = {
 
 
 // ---------- Timers ----------
-//#include <dlay.h>
-//dlay dripTimer;
-//dlay sequenceTimer;
-//dlay sequenceDelay;
-
+#include <dlay.h>
+//Create the timer objects, we will initialize them in setup()
+dlay Speed;                                 //How fast between rings
+dlay Hold;                                  //How long to hold a solid color
+dlay Diag;                                  //Diagnostic mode timer.
 
 
 // ---------- fastLED ----------
 #define FASTLED_INTERNAL        // Pragma fix
 #include <FastLED.h>
+
 
 // ----- Tree LEDs -----
 #define NUM_LEDS 785
@@ -66,6 +67,7 @@ static const char *mqttSubs[] = {
 #define LED_TYPE WS2811
 CRGB leds[NUM_LEDS];            // Array for the string of tree LEDS
 uint8_t data[NUM_LEDS];
+
 
 // ----- Topper LEDS -----
 #define TOP_DATA_PIN    D3
@@ -108,9 +110,9 @@ int paletteNumber;
 int ringPtr = 0;              //Current ring number
 int dripSpeed = 25;           //Smaller is faster
 #ifdef test
-int dripPeriod = 3000;        //How often a drip starts
+int dripHold = 2000;        //How often a drip starts
 #else
-int dripPeriod = 15000;
+int dripHold = 15000;
 #endif
 
 bool diagFlag = false;        //Set true when an LED number comes over MQTT.
@@ -155,24 +157,6 @@ void  fadeUp () {
 }
 
 
-// -------------------- dlay() --------------------
-void dlay(unsigned long waitTime) {
-  //Delay waitTime ms, but keep the critical stuff in the delay loop
-  //Put dlay(0); at the top of loop() to make sure the critical stuff is handled properly.
-  unsigned long endTime = millis() + waitTime;    //Calculate the end time.
-  do {
-    ESP.wdtFeed();
-    ArduinoOTA.handle();
-    top_glitter();
-    //Make sure we stay connected to the mqtt broker
-    if (!client.connected()) {
-      mqttConnect();
-    }
-    client.loop();                      //Check for MQTT messages
-    if (waitTime == 0) return;
-  } while (millis() <= endTime);
-}
-
 
 
 //----------------------- setup() -------------------
@@ -207,8 +191,15 @@ void setup() {
   for (int iLed = 0; iLed < NUM_LEDS; iLed = iLed + 1) leds[iLed] = CRGB::Black;
   FastLED.show();
   delay(100);
-  // ----------------------------
 
+
+  //Init the timers
+  Speed.setTime(dripSpeed, true);
+  Speed.start();
+  Hold.setTime(dripHold, true);
+  Hold.start();
+  Diag.setTime(10000, true);              //How long we remain in diag mode.
+  Diag.start();
 }
 
 
@@ -216,29 +207,44 @@ void setup() {
 
 //---------------------------- loop() ------------------------
 void loop() {
-  dlay(0);                //Handle the critical stuff
+  // - - - Housekeeping stuff to do with every loop  - - -
+  ESP.wdtFeed();
+  ArduinoOTA.handle();
+  //Make sure we stay connected to the mqtt broker
+  if (!client.connected()) {
+    mqttConnect();
+  }
+  client.loop();                      //Check for MQTT messages
+  //- - - - - - - - - -  - - - - - - - - - - - - - - - - -
+
+
+  top_glitter();
 
   if (diagFlag) {
+    if (Diag.ding()) {      //Timeout the diagnostic mode
+      Diag.stop();
+      diagFlag = false;
+    }
+
     // Turn off all LEDs
     for (int iLed = 0; iLed < NUM_LEDS; iLed = iLed + 1) leds[iLed] = CRGB::Black;
     // Turn on the selected LED
-    leds[diagLED] = CRGB::Blue;
+    leds[diagLED] = CRGB::Grey;
     FastLED.show();
-    //Serial.print(F("Turn on LED# "));
-    //Serial.println(diagLED);
-    dlay(10);
     return;
   }
 
-  // Drip
-  for (int ringPtr = 0; ringPtr < ringCount; ringPtr++) {     //For each ring
-    setRing(ringPtr, ledsPerRing, colors[colorNumber]);       //Paint the color
-    FastLED.show();
-    dlay(dripSpeed);
-  }
+  drip();
+  /*
+    // Drip
+    for (int ringPtr = 0; ringPtr < ringCount; ringPtr++) {     //For each ring
+      setRing(ringPtr, ledsPerRing, colors[colorNumber]);       //Paint the color
+      FastLED.show();
+      dlay(dripSpeed);
+    }
 
-  dlay(dripPeriod);                                          //Hold the solid color
-  colorNumber++;                                              //Next color.
-  if (colorNumber >= COLOR_COUNT) colorNumber = 0;
-
+    dlay(dripHold);                                          //Hold the solid color
+    colorNumber++;                                              //Next color.
+    if (colorNumber >= COLOR_COUNT) colorNumber = 0;
+  */
 }

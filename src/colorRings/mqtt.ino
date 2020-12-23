@@ -142,7 +142,8 @@ void callback(String topic, byte *message, unsigned int length) {
     Serial.println(F("Received ledTopic"));
     diagFlag = true;
     diagLED = atoi(mess);
-    if (diagLED < 0) diagLED = 0;         //No negative LED numbers.
+    if (diagLED < 0) diagLED = 0;           //No negative LED numbers.
+    Diag.setTime(10000, true);              //How long we remain in diag mode.
   }
 
 }
