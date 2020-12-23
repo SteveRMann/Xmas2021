@@ -24,18 +24,20 @@ char hostName[24];                  //Holds hostNamePrefix + the last three byte
 //Declare an object of class WiFiClient, which allows to establish a connection to a specific IP and port
 //Declare an object of class PubSubClient, which receives as input of the constructor the previously defined WiFiClient.
 //The constructor MUST be unique on the network.
-WiFiClient colrrings;
-PubSubClient client(colrrings);
+WiFiClient colrerings;
+PubSubClient client(colrerings);
 
 #define NODENAME "colorRings"                               //Give this node a name
 const char *cmndTopic = NODENAME "/cmnd";                   //Incoming commands, payload is a command.
-const char *connectName =  NODENAME "1";                    //Must be unique on the network
+const char *ledTopic = NODENAME "/led";                     //LED number to light (for identifying bad leds).
+const char *connectName =  NODENAME "2";                    //Must be unique on the network
 const char *mqttServer = MQTT_SERVER;                       //Broker credentials defined in Kaywinnet.h
 const int mqttPort = MQTT_PORT;
 
 //Build an array of topics to subscribe to in mqttConnect()
 static const char *mqttSubs[] = {
-  cmndTopic
+  cmndTopic,
+  ledTopic
 };
 
 
@@ -60,7 +62,7 @@ static const char *mqttSubs[] = {
 #define NUM_LEDS 785
 #define TREE_PIN D2
 #define COLOR_ORDER RGB
-#define BRIGHTNESS 80
+#define BRIGHTNESS 60
 #define LED_TYPE WS2811
 CRGB leds[NUM_LEDS];            // Array for the string of tree LEDS
 uint8_t data[NUM_LEDS];
@@ -110,6 +112,9 @@ int dripPeriod = 3000;        //How often a drip starts
 #else
 int dripPeriod = 15000;
 #endif
+
+bool diagFlag = false;        //Set true when an LED number comes over MQTT.
+int diagLED = 0;              //LED number
 
 
 //----------------------- setRing() -------------------
@@ -177,12 +182,10 @@ void setup() {
   Serial.println(F(SKETCH));
   Serial.println(F("---------------"));
 
-  //#ifndef test
   setup_wifi();
   start_OTA();
   client.setServer(mqttServer, mqttPort);
   mqttConnect();
-  //#endif
 
 
   delay(10);
@@ -214,6 +217,18 @@ void setup() {
 //---------------------------- loop() ------------------------
 void loop() {
   dlay(0);                //Handle the critical stuff
+
+  if (diagFlag) {
+    // Turn off all LEDs
+    for (int iLed = 0; iLed < NUM_LEDS; iLed = iLed + 1) leds[iLed] = CRGB::Black;
+    // Turn on the selected LED
+    leds[diagLED] = CRGB::Blue;
+    FastLED.show();
+    //Serial.print(F("Turn on LED# "));
+    //Serial.println(diagLED);
+    dlay(10);
+    return;
+  }
 
   // Drip
   for (int ringPtr = 0; ringPtr < ringCount; ringPtr++) {     //For each ring

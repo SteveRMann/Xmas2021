@@ -94,30 +94,71 @@ void mqttConnect() {
 //==================================  mqtt callback ==================================
 //This function is executed when some device publishes a message to a topic that this ESP8266 is subscribed to.
 //
-void callback(String topic, byte * message, unsigned int length) {
+void callback(String topic, byte *message, unsigned int length) {
+
+  char mess[24];
 
   Serial.println();
   Serial.print(F("Message arrived on topic: "));
   Serial.println(topic);
+  Serial.print(F("Message length= "));
+  Serial.println(length);
 
-
-  //Convert the character array to a string
-  String messageString;
   for (unsigned int i = 0; i < length; i++) {
-    messageString += (char)message[i];
+    mess[i] = message[i];
   }
-  messageString.trim();
-  messageString.toUpperCase();          //Make the string upper-case
 
+  /*
+    //Convert the character array to a string1
+    String messageString;
+    for (unsigned int i = 0; i < length; i++) {
+      messageString += (char)message[i];
+      mess[i] = message[i];
+    }
+    messageString.trim();
+    messageString.toUpperCase();          //Make the string upper-case
 
-  Serial.print("messageString: ");
-  Serial.print(messageString);
+    Serial.print("messageString: ");
+    Serial.print(messageString);
+    Serial.println();
+  */
+  toLow(mess);         //Make mess LowerCase
+  Serial.print("message: ");
+  Serial.print(mess);
   Serial.println();
 
 
 
   if (topic == cmndTopic) {
     Serial.println(F("Received cmndTopic"));
+
+    if (!strcmp(mess, "reset")) {          //if mess=="reset", then strcmp returns a zero (false).
+      diagFlag = false;
+      //Serial.println(F("diagFlag=false"));
+    }
   }
 
-} //callback
+  if (topic == ledTopic) {
+    Serial.println(F("Received ledTopic"));
+    diagFlag = true;
+    diagLED = atoi(mess);
+    if (diagLED < 0) diagLED = 0;         //No negative LED numbers.
+  }
+
+}
+
+
+
+void toUp(char *p) {
+  while (*p) {
+    *p = toupper(*p);
+    p++;
+  }
+}
+
+void toLow(char *p) {
+  while (*p) {
+    *p = tolower(*p);
+    p++;
+  }
+}
