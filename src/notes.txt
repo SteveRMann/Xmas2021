@@ -9,3 +9,4 @@ https://gist.github.com/kriegsman/756ea6dcae8e30845b5a
 ColorWavesWithPalettes
 Constantly changing base color with fading twinkles.
 
+colorings.ino is what I wound up using.
