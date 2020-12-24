@@ -3,6 +3,7 @@ void diagnostics() {
   if (diagFlag) {
     if (Diag.ding()) {      //Timeout the diagnostic mode
       Diag.stop();
+      Speed.start();
       diagFlag = false;
     }
 

@@ -134,6 +134,7 @@ void callback(String topic, byte *message, unsigned int length) {
 
     if (!strcmp(mess, "reset")) {          //if mess=="reset", then strcmp returns a zero (false).
       diagFlag = false;
+      Speed.start();
       //Serial.println(F("diagFlag=false"));
     }
   }
@@ -144,9 +145,11 @@ void callback(String topic, byte *message, unsigned int length) {
     diagLED = atoi(mess);
     if (diagLED < 0) diagLED = 0;           //No negative LED numbers.
     Diag.setTime(10000, true);              //How long we remain in diag mode.
+    Speed.stop();                           //Turn off the drip timers.
+    Hold.stop();
   }
 
-  if (topic == holdTopic) {                // How long between drips
+  if (topic == holdTopic) {                //How long between drips
     Serial.println(F("Received holdTopic"));
     dripHold = atoi(mess);
     if (dripHold < 0) dripHold = 2000;     //Negative defaults to 2 seconds
