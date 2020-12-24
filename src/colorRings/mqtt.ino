@@ -146,6 +146,12 @@ void callback(String topic, byte *message, unsigned int length) {
     Diag.setTime(10000, true);              //How long we remain in diag mode.
   }
 
+  if (topic == holdTopic) {                // How long between drips
+    Serial.println(F("Received holdTopic"));
+    dripHold = atoi(mess);
+    if (dripHold < 0) dripHold = 2000;     //Negative defaults to 2 seconds
+  }
+
 }
 
 

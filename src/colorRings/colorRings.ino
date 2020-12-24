@@ -30,6 +30,7 @@ PubSubClient client(colrerings);
 #define NODENAME "colorRings"                               //Give this node a name
 const char *cmndTopic = NODENAME "/cmnd";                   //Incoming commands, payload is a command.
 const char *ledTopic = NODENAME "/led";                     //LED number to light (for identifying bad leds).
+const char *holdTopic = NODENAME "/hold";                   //Hold time between colors.
 const char *connectName =  NODENAME "2";                    //Must be unique on the network
 const char *mqttServer = MQTT_SERVER;                       //Broker credentials defined in Kaywinnet.h
 const int mqttPort = MQTT_PORT;
@@ -37,7 +38,8 @@ const int mqttPort = MQTT_PORT;
 //Build an array of topics to subscribe to in mqttConnect()
 static const char *mqttSubs[] = {
   cmndTopic,
-  ledTopic
+  ledTopic,
+  holdTopic
 };
 
 
