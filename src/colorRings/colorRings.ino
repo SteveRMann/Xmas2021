@@ -207,44 +207,8 @@ void setup() {
 
 //---------------------------- loop() ------------------------
 void loop() {
-  // - - - Housekeeping stuff to do with every loop  - - -
-  ESP.wdtFeed();
-  ArduinoOTA.handle();
-  //Make sure we stay connected to the mqtt broker
-  if (!client.connected()) {
-    mqttConnect();
-  }
-  client.loop();                      //Check for MQTT messages
-  //- - - - - - - - - -  - - - - - - - - - - - - - - - - -
-
-
+  housekeeping();
+  diagnostics();
   top_glitter();
-
-  if (diagFlag) {
-    if (Diag.ding()) {      //Timeout the diagnostic mode
-      Diag.stop();
-      diagFlag = false;
-    }
-
-    // Turn off all LEDs
-    for (int iLed = 0; iLed < NUM_LEDS; iLed = iLed + 1) leds[iLed] = CRGB::Black;
-    // Turn on the selected LED
-    leds[diagLED] = CRGB::Grey;
-    FastLED.show();
-    return;
-  }
-
   drip();
-  /*
-    // Drip
-    for (int ringPtr = 0; ringPtr < ringCount; ringPtr++) {     //For each ring
-      setRing(ringPtr, ledsPerRing, colors[colorNumber]);       //Paint the color
-      FastLED.show();
-      dlay(dripSpeed);
-    }
-
-    dlay(dripHold);                                          //Hold the solid color
-    colorNumber++;                                              //Next color.
-    if (colorNumber >= COLOR_COUNT) colorNumber = 0;
-  */
 }
