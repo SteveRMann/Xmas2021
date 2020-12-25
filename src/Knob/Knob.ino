@@ -66,18 +66,24 @@ ezButton resetButton(D4);        //create Button object that attach to pin 7;
 
 // Rotary Encoder Inputs
 #define INPUTA D1           //A (CLK)
-#define INPUTB D2           //B (DT)
+#define INPUTB D3           //B (DT)
 #define BUTTON D4           //Button, if the encoder has one.
 
 // LED Outputs
 #define ledCW D6
-#define ledCCW D5
+#define ledCCW D7
 
 int counter = 0;
 int currentStateCLK;
 int previousStateCLK;
 
 char encoderDirection[] = "CCW";
+
+//--------------- OLED --------------
+#include <Wire.h>
+#include "SSD1306.h"
+SSD1306  display(0x3C, D2, D5); //Address 0x3C, D2 (SDA/Serial Data), and D5 (SCK/Serial Clock).
+
 
 
 //--------------- showCounter ---------------
@@ -93,6 +99,10 @@ void showCounter() {
   client.publish(ledValueTopic, buffer);
   Serial.print(F("char buffer= "));
   Serial.println(buffer);
+
+  display.clear();               //clear the internal RAM
+  display.drawString(0, 0, buffer);
+  display.display();
 }
 
 // ---------------- setup ----------------
@@ -119,6 +129,9 @@ void setup() {
   pinMode (ledCW, OUTPUT);
   pinMode (ledCCW, OUTPUT);
 
+  display.init();
+  display.flipScreenVertically();
+  display.setFont(ArialMT_Plain_24);
   resetButton.setDebounceTime(50);                 //debounce time in milliseconds
 
   // Read the initial state of INPUTA
