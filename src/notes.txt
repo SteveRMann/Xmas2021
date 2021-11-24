@@ -1,12 +1,35 @@
 fadeTowardColor.ino
-  Interesting twinkle effect.  Tree is green with ocassional sparkles of other colors at random.
-
+ Interesting twinkle effect.  Tree is green with occasional sparkles of other colors at random.
 
 TwinkleFOX.ino
-https://gist.github.com/kriegsman/756ea6dcae8e30845b5a
-
+ https://gist.github.com/kriegsman/756ea6dcae8e30845b5a
+ Very nice color change with twinkles between colors..
+  Nice by itself
 
 ColorWavesWithPalettes
-Constantly changing base color with fading twinkles.
+ Constantly changing base color with fading twinkles.
+ Nice by itself.
 
-colorings.ino is what I wound up using.
+colorings.ino 
+ Not working. Something wrong with mqtt
+
+fadeTowardColor.ino
+ Green background with random leds changing random color then fade back to green.
+
+Pacifica
+ Gentle, blue-green ocean waves.
+ Very nice by itself.
+
+paletteBeat.ino
+ Red background, with every led twinkling then returning to red.
+ 
+xmasTree.ino
+ This is the 2020 indoor tree sequence.
+ Multicolor stripes with "glitter" flashes
+ Change between palettes is abrupt.
+ 
+==== Utility sketches =====
+countLeds.ino
+ This sketch lights up all LEDs in violet, but with every tenth LED green,
+ and every hundredth is yellow.
+

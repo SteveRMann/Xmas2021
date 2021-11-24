@@ -4,13 +4,13 @@
 
 /*
   Make sure you include at the start of the sketch:
-//---------- wifi ----------
-#define HOSTPREFIX "showRings"      //18 chars max
-#include "ESP8266WiFi.h"            //Not needed if also using the Arduino OTA Library...
-#include <Kaywinnet.h>              //WiFi credentials
-char macBuffer[24];                 //Holds the last three digits of the MAC, in hex.
-char hostNamePrefix[] = HOSTPREFIX;
-char hostName[24];                  //Holds hostNamePrefix + the last three bytes of the MAC address.
+  //---------- wifi ----------
+  #define HOSTPREFIX "showRings"      //18 chars max
+  #include "ESP8266WiFi.h"            //Not needed if also using the Arduino OTA Library...
+  #include <Kaywinnet.h>              //WiFi credentials
+  char macBuffer[24];                 //Holds the last three digits of the MAC, in hex.
+  char hostNamePrefix[] = HOSTPREFIX;
+  char hostName[24];                  //Holds hostNamePrefix + the last three bytes of the MAC address.
 */
 
 void setup_wifi() {

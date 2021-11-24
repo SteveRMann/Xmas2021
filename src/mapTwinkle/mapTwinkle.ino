@@ -1,3 +1,4 @@
+#define SKETCH "mapTwinkle.ino"
 #define FASTLED_INTERNAL        // Pragma fix
 #include "FastLED.h"
 
@@ -7,16 +8,10 @@
 //
 // Parameters include: background color, peak twinkle color, and speed
 // of brightening and dimming.
-//
-// Mark Kriegsman, August 2015
 
-#define LED_PIN     D3
-#define LED_TYPE    WS2811
-#define COLOR_ORDER RGB
-#define NUM_LEDS    75
+
+#include "myLeds.h"
 CRGB leds[NUM_LEDS];
-
-#define MASTER_BRIGHTNESS   255
 
 // Base background color
 #define BASE_COLOR       CRGB(32,0,32)
@@ -25,7 +20,7 @@ CRGB leds[NUM_LEDS];
 #define PEAK_COLOR       CRGB(64,0,64)
 
 
-// Currently set to brighten up a bit faster than it dims down, 
+// Currently set to brighten up a bit faster than it dims down,
 // but this can be adjusted.
 
 // Amount to increment the color by each loop as it gets brighter:
@@ -35,23 +30,34 @@ CRGB leds[NUM_LEDS];
 #define DELTA_COLOR_DOWN CRGB(1,0,1)
 
 
-// Chance of each pixel starting to brighten up.  
+// Chance of each pixel starting to brighten up.
 // 1 or 2 = a few brightening pixels at a time.
 // 10 = lots of pixels brightening at a time.
 #define CHANCE_OF_TWINKLE 1
 
 void setup() {
-  delay(3000);
-  FastLED.addLeds<LED_TYPE,LED_PIN,COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
-  FastLED.setBrightness(MASTER_BRIGHTNESS);
+  Serial.begin(115200);
+  Serial.println();
+  Serial.println(F(SKETCH));
+  Serial.println(F("---------------"));
+
+  delay(1000);
+  FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
+  FastLED.setBrightness(BRIGHTNESS);
+
+  fill_solid( leds, NUM_LEDS, CRGB::Black);           //All leds off
+  FastLED.show();
+  FastLED.delay(1000);
 
   InitPixelStates();
 }
 
+
+// ---------- loop() ----------
 void loop()
 {
   TwinkleMapPixels();
-  FastLED.show();  
+  FastLED.show();
   FastLED.delay(20);
 }
 
@@ -64,30 +70,29 @@ void InitPixelStates()
   fill_solid( leds, NUM_LEDS, BASE_COLOR);
 }
 
-void TwinkleMapPixels()
-{
-  for( uint16_t i = 0; i < NUM_LEDS; i++) {
-    if( PixelState[i] == SteadyDim) {
+void TwinkleMapPixels() {
+  for ( uint16_t i = 0; i < NUM_LEDS; i++) {
+    if ( PixelState[i] == SteadyDim) {
       // this pixels is currently: SteadyDim
       // so we randomly consider making it start getting brighter
-      if( random8() < CHANCE_OF_TWINKLE) {
+      if ( random8() < CHANCE_OF_TWINKLE) {
         PixelState[i] = GettingBrighter;
       }
-      
-    } else if( PixelState[i] == GettingBrighter ) {
+
+    } else if ( PixelState[i] == GettingBrighter ) {
       // this pixels is currently: GettingBrighter
       // so if it's at peak color, switch it to getting dimmer again
-      if( leds[i] >= PEAK_COLOR ) {
+      if ( leds[i] >= PEAK_COLOR ) {
         PixelState[i] = GettingDimmerAgain;
       } else {
         // otherwise, just keep brightening it:
         leds[i] += DELTA_COLOR_UP;
       }
-      
+
     } else { // getting dimmer again
       // this pixels is currently: GettingDimmerAgain
       // so if it's back to base color, switch it to steady dim
-      if( leds[i] <= BASE_COLOR ) {
+      if ( leds[i] <= BASE_COLOR ) {
         leds[i] = BASE_COLOR; // reset to exact base color, in case we overshot
         PixelState[i] = SteadyDim;
       } else {

@@ -1,43 +1,39 @@
-#define FASTLED_INTERNAL        // Pragma fix
-#include "FastLED.h"
+#define SKETCH "paletteBeat.ino"
 
 // PaletteBeat
+//
+// Red background, with every led twinkling then returning to red.
+//
 // Shows how to pulse back and forth between two color palettes
 // at a given number of beats per minute.
 //
 // The two color palettes in the pulse cycle each can
 // also independently morph and shift -- although choosing
 // new target palettes is not shown here.
-//
-// Mark Kriegsman, August 2015
 
-#if FASTLED_VERSION < 3001000
-#error "Requires FastLED 3.1 or later; check github for latest code."
-#endif
+#define BPM 9                   //How often the wave occurs.
 
-#define DATA_PIN    D3
-//#define CLK_PIN   4
-#define LED_TYPE    WS2811
-#define COLOR_ORDER RGB
-#define NUM_LEDS    75
-#define BRIGHTNESS  100
-
+#define FASTLED_INTERNAL        // Pragma fix
+#include "FastLED.h"
+#include "myLeds.h"
 CRGB leds[NUM_LEDS];
 
 
-
+// ---------- setup() ----------
 void setup() {
   delay(10);
 
-  FastLED.addLeds<LED_TYPE, DATA_PIN, COLOR_ORDER>(leds, NUM_LEDS)
+  FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS)
   .setCorrection(TypicalLEDStrip)
   .setDither(BRIGHTNESS < 255);
 
   FastLED.setBrightness(BRIGHTNESS);
 }
 
-void loop()
-{
+
+
+// ---------- loop() ----------
+void loop(){
   PeriodicallyChooseNewColorPalettes(); // currently does nothing
 
   MixBeatPalette(); // mix up the new 'beat palette' to draw with
@@ -66,7 +62,7 @@ CRGBPalette16 gBeatPalette;
 //
 void MixBeatPalette()
 {
-  uint8_t paletteBeatsPerMinute = 60;
+  uint8_t paletteBeatsPerMinute = BPM;
 
   uint8_t beat = beat8( paletteBeatsPerMinute); // repeats from 0..255
 

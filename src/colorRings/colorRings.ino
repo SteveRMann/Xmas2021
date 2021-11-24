@@ -3,6 +3,8 @@
 
 /*
    This version uses the dlay library
+
+   Something in MQTT is crashing.
 */
 
 
@@ -59,14 +61,10 @@ dlay Diag;                                  //Diagnostic mode timer.
 // ---------- fastLED ----------
 #define FASTLED_INTERNAL        // Pragma fix
 #include <FastLED.h>
+#include "myLeds.h"
 
 
 // ----- Tree LEDs -----
-#define NUM_LEDS 785
-#define TREE_PIN D2
-#define COLOR_ORDER RGB
-#define BRIGHTNESS 60
-#define LED_TYPE WS2811
 CRGB leds[NUM_LEDS];            // Array for the string of tree LEDS
 uint8_t data[NUM_LEDS];
 
@@ -170,12 +168,12 @@ void setup() {
 
   setup_wifi();
   start_OTA();
-  client.setServer(mqttServer, mqttPort);
-  mqttConnect();
+//  client.setServer(mqttServer, mqttPort);
+//  mqttConnect();
 
 
   delay(10);
-  FastLED.addLeds<LED_TYPE, TREE_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
+  FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
   FastLED.addLeds<TOP_LED_TYPE, TOP_DATA_PIN, COLOR_ORDER>(topper, TOP_NUM_LEDS).setCorrection(TypicalLEDStrip);
   FastLED.setBrightness(BRIGHTNESS);
 
@@ -195,13 +193,15 @@ void setup() {
   delay(100);
 
 
+  
   //Init the timers
   Speed.setTime(dripSpeed, true);
   Speed.start();
   Hold.setTime(dripHold, true);
   Hold.start();
-  Diag.setTime(10000, true);              //How long we remain in diag mode.
+  Diag.setTime(15000, true);              //How long we remain in diag mode.
   Diag.start();
+
 }
 
 

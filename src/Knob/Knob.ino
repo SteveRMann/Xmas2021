@@ -61,10 +61,9 @@ static const char *mqttSubs[] = {
 
 // ---------- Button Handler ----------
 #include <ezButton.h>
-ezButton resetButton(D4);        //create Button object that attach to pin 7;
+ezButton resetButton(D4);        //create Button object that attach to pin D4;
 
-
-// Rotary Encoder Inputs
+// ----- Rotary Encoder -----
 #define INPUTA D1           //A (CLK)
 #define INPUTB D3           //B (DT)
 #define BUTTON D4           //Button, if the encoder has one.
@@ -81,7 +80,8 @@ char encoderDirection[] = "CCW";
 
 //--------------- OLED --------------
 #include <Wire.h>
-#include "SSD1306.h"
+//#include "SSD1306.h"
+#include <Adafruit_SSD1306.h>
 SSD1306  display(0x3C, D2, D5); //Address 0x3C, D2 (SDA/Serial Data), and D5 (SCK/Serial Clock).
 
 

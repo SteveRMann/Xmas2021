@@ -4764,6 +4764,50 @@ LETTER landscape</description>
 </deviceset>
 </devicesets>
 </library>
+<library name="BeagleBone_Black_Wireless" urn="urn:adsk.eagle:library:6644236">
+<description>Generated from &lt;b&gt;BeagleBone_Black_Wireless.sch&lt;/b&gt;&lt;p&gt;
+by exp-lbrs.ulp</description>
+<packages>
+<package name="BEAGLEBONEBLACK_MOUNTING_HOLE" urn="urn:adsk.eagle:footprint:6644297/1" library_version="14">
+<pad name="P$1" x="0" y="0" drill="3.175" diameter="4.445"/>
+</package>
+</packages>
+<packages3d>
+<package3d name="BEAGLEBONEBLACK_MOUNTING_HOLE" urn="urn:adsk.eagle:package:6644362/2" type="model" library_version="14">
+<packageinstances>
+<packageinstance name="BEAGLEBONEBLACK_MOUNTING_HOLE"/>
+</packageinstances>
+</package3d>
+</packages3d>
+<symbols>
+<symbol name="BEAGLEBONEBLACK_MOUNTING_HOLE" urn="urn:adsk.eagle:symbol:6644265/1" library_version="14">
+<circle x="0" y="2.54" radius="2.54" width="0.254" layer="94"/>
+<pin name="P$1" x="0" y="-5.08" visible="off" length="middle" rot="R90"/>
+<text x="0.762" y="-2.032" size="1.27" layer="95">&gt;NAME</text>
+</symbol>
+</symbols>
+<devicesets>
+<deviceset name="BEAGLEBONEBLACK_MOUNTING_HOLE" urn="urn:adsk.eagle:component:6644400/2" prefix="MGT" library_version="14">
+<description>Chassis Mounting Hole w/GND connection ability</description>
+<gates>
+<gate name="G$1" symbol="BEAGLEBONEBLACK_MOUNTING_HOLE" x="0" y="0"/>
+</gates>
+<devices>
+<device name="" package="BEAGLEBONEBLACK_MOUNTING_HOLE">
+<connects>
+<connect gate="G$1" pin="P$1" pad="P$1"/>
+</connects>
+<package3dinstances>
+<package3dinstance package3d_urn="urn:adsk.eagle:package:6644362/2"/>
+</package3dinstances>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
+</devicesets>
+</library>
 </libraries>
 <attributes>
 </attributes>
@@ -4788,6 +4832,11 @@ LETTER landscape</description>
 <part name="2X" library="adafruit" library_urn="urn:adsk.eagle:library:420" deviceset="R-US_" device="0207/10" package3d_urn="urn:adsk.eagle:package:6240597/1"/>
 <part name="U$1" library="diy-modules" deviceset="DISPLAY-OLED-128X32" device=""/>
 <part name="P+2" library="audio amplifier example" library_urn="urn:adsk.eagle:library:970892" deviceset="VCC" device=""/>
+<part name="MGT1" library="BeagleBone_Black_Wireless" library_urn="urn:adsk.eagle:library:6644236" deviceset="BEAGLEBONEBLACK_MOUNTING_HOLE" device="" package3d_urn="urn:adsk.eagle:package:6644362/2"/>
+<part name="MGT2" library="BeagleBone_Black_Wireless" library_urn="urn:adsk.eagle:library:6644236" deviceset="BEAGLEBONEBLACK_MOUNTING_HOLE" device="" package3d_urn="urn:adsk.eagle:package:6644362/2"/>
+<part name="MGT3" library="BeagleBone_Black_Wireless" library_urn="urn:adsk.eagle:library:6644236" deviceset="BEAGLEBONEBLACK_MOUNTING_HOLE" device="" package3d_urn="urn:adsk.eagle:package:6644362/2"/>
+<part name="MGT4" library="BeagleBone_Black_Wireless" library_urn="urn:adsk.eagle:library:6644236" deviceset="BEAGLEBONEBLACK_MOUNTING_HOLE" device="" package3d_urn="urn:adsk.eagle:package:6644362/2"/>
+<part name="SUPPLY5" library="supply2" library_urn="urn:adsk.eagle:library:372" deviceset="GND" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -4846,6 +4895,21 @@ LETTER landscape</description>
 <instance part="P+2" gate="VCC" x="71.12" y="83.82" smashed="yes" rot="R270">
 <attribute name="VALUE" x="72.136" y="85.344" size="1.27" layer="96" rot="R270"/>
 </instance>
+<instance part="MGT1" gate="G$1" x="20.32" y="172.72" smashed="yes">
+<attribute name="NAME" x="21.082" y="170.688" size="1.27" layer="95"/>
+</instance>
+<instance part="MGT2" gate="G$1" x="27.94" y="172.72" smashed="yes">
+<attribute name="NAME" x="28.702" y="170.688" size="1.27" layer="95"/>
+</instance>
+<instance part="MGT3" gate="G$1" x="35.56" y="172.72" smashed="yes">
+<attribute name="NAME" x="36.322" y="170.688" size="1.27" layer="95"/>
+</instance>
+<instance part="MGT4" gate="G$1" x="43.18" y="172.72" smashed="yes">
+<attribute name="NAME" x="43.942" y="170.688" size="1.27" layer="95"/>
+</instance>
+<instance part="SUPPLY5" gate="GND" x="43.18" y="160.02" smashed="yes">
+<attribute name="VALUE" x="41.275" y="156.845" size="1.778" layer="96"/>
+</instance>
 </instances>
 <busses>
 </busses>
@@ -4879,6 +4943,20 @@ LETTER landscape</description>
 <pinref part="CW" gate="G$1" pin="C"/>
 <pinref part="SUPPLY3" gate="GND" pin="GND"/>
 <wire x1="170.18" y1="68.58" x2="170.18" y2="66.04" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="MGT1" gate="G$1" pin="P$1"/>
+<pinref part="SUPPLY5" gate="GND" pin="GND"/>
+<wire x1="20.32" y1="167.64" x2="27.94" y2="167.64" width="0.1524" layer="91"/>
+<wire x1="27.94" y1="167.64" x2="35.56" y2="167.64" width="0.1524" layer="91"/>
+<wire x1="35.56" y1="167.64" x2="43.18" y2="167.64" width="0.1524" layer="91"/>
+<wire x1="43.18" y1="167.64" x2="43.18" y2="162.56" width="0.1524" layer="91"/>
+<pinref part="MGT2" gate="G$1" pin="P$1"/>
+<junction x="27.94" y="167.64"/>
+<pinref part="MGT3" gate="G$1" pin="P$1"/>
+<junction x="35.56" y="167.64"/>
+<pinref part="MGT4" gate="G$1" pin="P$1"/>
+<junction x="43.18" y="167.64"/>
 </segment>
 </net>
 <net name="VCC" class="0">
