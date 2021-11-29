@@ -1,4 +1,5 @@
 #define SKETCH "TwinkleFox.ino"
+#define VERSION "2.00"           // Four characters
 
 /*
    TwinkleFOX: Twinkling 'holiday' lights that fade in and out.
@@ -61,13 +62,29 @@
 
 */
 
+//#include <ALib0.h>
+
+//---------- wifi ----------
+#define HOSTPREFIX "XMAS-"   //18 chars max
+#include "ESP8266WiFi.h"    //Not needed if also using the Arduino OTA Library...
+#include <Kaywinnet.h>
+char macBuffer[24];         //Holds the last three digits of the MAC, in hex.
+char hostNamePrefix[] = HOSTPREFIX;
+char hostName[24];          //Holds hostNamePrefix + the last three bytes of the MAC address.
+
+
+// ---------- ota ----------
+#include <ArduinoOTA.h>
+
+
+// --------------- FastLED ---------------
 #define FASTLED_INTERNAL        // Pragma fix
-#include "FastLED.h"
+#include <FastLED.h>
+#include <myXmasOutsideLeds.h>
+CRGBArray<NUM_LEDS> leds;         //Original line
+//CRGB leds[NUM_LEDS];
 
-#include "myLeds.h"
-CRGBArray<NUM_LEDS> leds;
 
-#include <ALib0.h>
 
 // Overall twinkle speed.
 // 0 (VERY slow) to 8 (VERY fast).
@@ -106,11 +123,15 @@ CRGB gBackgroundColor = CRGB::Black;
 CRGBPalette16 gCurrentPalette;
 CRGBPalette16 gTargetPalette;
 
+// --------------- setup ---------------
 void setup() {
   Serial.begin(115200);
   Serial.println();
   Serial.println(F(SKETCH));
   Serial.println(F("---------------"));
+
+  setup_wifi();
+  start_OTA();
 
   delay(100);   //safety startup delay
   //FastLED.setMaxPowerInVoltsAndMilliamps( VOLTS, MAX_MA);
@@ -119,10 +140,15 @@ void setup() {
   FastLED.setBrightness(BRIGHTNESS);
 
   chooseNextColorPalette(gTargetPalette);
+  
 }
 
 
+
+// --------------- loop ---------------
 void loop() {
+  ArduinoOTA.handle();
+
   EVERY_N_SECONDS( SECONDS_PER_PALETTE ) {
     chooseNextColorPalette( gTargetPalette );
   }
@@ -135,6 +161,5 @@ void loop() {
 
   topper(NUM_LEDS - NUM_TOP, NUM_LEDS);   //Handle the topper
 
-  black(1, 41);     //Make unused LEDS black
   FastLED.show();
 }
