@@ -11,8 +11,8 @@ void start_OTA() {
     ArduinoOTA.handle();
   */
 
-  ArduinoOTA.setHostname(hostName);               // hostName is set up in "wifi"
-  
+  //Hostname defaults to esp8266 - [MAC address]
+  //ArduinoOTA.setHostname("tree_02");
   ArduinoOTA.onStart([]() {
     String type;
     if (ArduinoOTA.getCommand() == U_FLASH) {

@@ -4,9 +4,11 @@ void start_OTA() {
     // ---------- ota ----------
     #include <ArduinoOTA.h>
 
-    Start loop() with:
+    //In setup, after starting WiFi
+    start_OTA();
+
+    // Start loop() with:
     ArduinoOTA.handle();
-    
   */
 
   //Hostname defaults to esp8266 - [MAC address]

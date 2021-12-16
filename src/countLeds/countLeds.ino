@@ -7,7 +7,7 @@
 // every hundredth is yellow.
 //
 
-#include "myLeds.h"
+#include "myTreeLeds.h"
 CRGB leds[NUM_LEDS];
 
 

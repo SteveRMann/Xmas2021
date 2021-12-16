@@ -157,7 +157,7 @@ void loop() {
     nblendPaletteTowardPalette( gCurrentPalette, gTargetPalette, 12);
   }
 
-  drawTwinkles( leds);                    //Twinkles all LEDS
+  drawTwinkles(leds);                    //Twinkles all LEDS
 
   topper(NUM_LEDS - NUM_TOP, NUM_LEDS);   //Handle the topper
 

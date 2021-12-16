@@ -4,6 +4,9 @@ void start_OTA() {
     // ---------- ota ----------
     #include <ArduinoOTA.h>
 
+    //In setup, after starting WiFi
+    start_OTA();
+
     // Start loop() with:
     ArduinoOTA.handle();
   */
