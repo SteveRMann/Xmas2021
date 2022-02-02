@@ -17,7 +17,7 @@ void setup_wifi() {
 #ifndef Kaywinnet
 #include <Kaywinnet.h>
 #endif
-  byte mac[6];                     ////the MAC address of your Wifi shield
+  byte mac[6];                     ////the MAC address of your Wifi 
 
   Serial.println(F("\n"));
   Serial.print(F("Connecting to "));
